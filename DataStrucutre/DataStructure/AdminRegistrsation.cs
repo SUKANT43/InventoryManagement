@@ -6,7 +6,24 @@ using System.Threading.Tasks;
 
 namespace DataStrucutre.DataStructure
 {
-    class AdminRegistrsation
+    public class AdminRegistrsation
     {
+
+        public enum RegistrationStatus
+        {
+            Pending,
+            Completed
+        }
+
+        public string Name { get; }
+        public string Email { get; }
+        public string Password { get; }
+
+
+        public AdminRegistrsation(string name, string email, string password)
+        {
+
+        }
     }
 }
+
