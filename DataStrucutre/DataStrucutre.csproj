@@ -65,8 +65,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Class1.cs" />
+    <Compile Include="DataStructure\Product.cs" />
     <Compile Include="DataStructure\SuperAdminRegistrsation.cs" />
-    <Compile Include="DataStructure\UserRegistration.cs" />
+    <Compile Include="DataStructure\Registration.cs" />
     <Compile Include="Enums\DataEnums.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
