@@ -26,4 +26,23 @@ namespace DataStrucutre.Enums
         OutOfStock
     }
 
+    public enum ProductCategory
+    {
+        Electronics,
+        Furniture,
+        Grocery,
+        Clothing,
+        Stationery,
+        Hardware,
+        Software,
+        Accessories,
+        Medicine,
+        FoodAndBeverages,
+        Household,
+        OfficeSupplies,
+        SportsEquipment,
+        BeautyProducts,
+        Automotive,
+        Miscellaneous
+    }
 }

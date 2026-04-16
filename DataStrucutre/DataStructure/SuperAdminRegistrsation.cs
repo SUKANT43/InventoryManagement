@@ -9,8 +9,7 @@ namespace DataStrucutre.DataStructure
 {
     public class SuperAdminRegistrsation
     {
-
-
+        public string Id { get; }
         public string Name { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
@@ -18,6 +17,7 @@ namespace DataStrucutre.DataStructure
         public UserLevel UserLevel { get; }
         public SuperAdminRegistrsation(string name, string email, string password)
         {
+            Id = UserLevel.ToString() + DateTime.Now.ToString();
             Name = name;
             Email = email;
             Password = password;
