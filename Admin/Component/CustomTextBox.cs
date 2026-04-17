@@ -1,286 +1,297 @@
 ﻿using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
-using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace Admin.Component
 {
     public partial class CustomTextBox : UserControl
     {
-        private Timer timer;
-        private bool isFocus = false;
-        private Point lastPoint;
+        private Font placeholderTextCenterFont = new Font(FontFamily.GenericSansSerif, 11);
+        private Font placeholderTextTopFont = new Font(FontFamily.GenericSansSerif, 9);
+        private Color placeholderLabelAtTopColor = Color.FromArgb(65, 125, 225);
+        private Color placeholderLabelAtCenterColor = Color.FromArgb(130, 130, 130);
+        private Timer timer = new Timer();
+        private bool isCenterPlaceHolder;
+        private int borderRadius = 7;
+        private Point placeholderlocation;
 
-
-        // border values
-        private int _curverRadius = 1;
-        public int CurveRadius
-        {
-            get => _curverRadius;
-            set
-            {
-                _curverRadius =Math.Max(1,value);
-                Invalidate();
-            }
-        }
-
-        private Color _textBoxborderColor = Color.Black;
-        public Color TextBoxBorderColor
-        {
-            get => _textBoxborderColor;
-            set
-            {
-                _textBoxborderColor = Color.Red;
-                Invalidate();
-            }
-        }
-
-        // placeholder values
-        private Color _placeHolderColor = Color.FromArgb(148, 163, 184);
-        public Color PlaceHolderColor
-        {
-            get => _placeHolderColor;
-            set => _placeHolderColor = value;
-        }
-
-        private Color _titleColor = Color.FromArgb(37, 99, 235);
-        public Color TitleColor
-        {
-            get => _titleColor;
-            set => _titleColor = value;
-        }
-
-        private Font _placeHolderFont = new Font("Segoe UI", 10F, FontStyle.Regular);
-        public Font PlaceHolderFont
-        {
-            get => _placeHolderFont;
-            set => _placeHolderFont = value;
-        }
-
-        private Font _titleFont = new Font("Segoe UI", 9F, FontStyle.Bold);
-        public Font TitleFont
-        {
-            get => _titleFont;
-            set => _titleFont = value;
-        }
-
-        // TextBox values
-        public string TextBoxText
-        {
-            get => textBox1.Text;
-            set => textBox1.Text = value;
-        }
-
-        public Color TextBoxBackColor
-        {
-            get => BackColor;
-            set
-            {
-                BackColor = value;
-                textBox1.BackColor = value;
-            }
-
-        }
-
-        public Color TextBoxForeColor
-        {
-            get => textBox1.ForeColor;
-            set => textBox1.ForeColor = value;
-        }
-
-        public Font TextBoxFont
-        {
-            get => textBox1.Font;
-            set => textBox1.Font = value;
-        }
 
         public CustomTextBox()
         {
             InitializeComponent();
-
-            DoubleBuffered = true;
-
-            timer = new Timer();
+            textBox1.MouseEnter += TextBox1MouseEnter;
+            this.Resize += TextBoxUResize;
+            textBox1.GotFocus += TextBoxUGotFocus;
+            textBox1.LostFocus += TextBoxULostFocus;
+            label1.Click += Label1Click;
+            TextBoxUResize(this, EventArgs.Empty);
+            isCenterPlaceHolder = true;
             timer.Interval = 15;
-            timer.Tick += MovePlaceholder;
+            timer.Tick += PlaceholderMove;
+            this.Paint += TextBoxUPaint;
+            Click += Label1Click;
+        }
 
-            Paint += DrawTextBoxUi;
-
-            textBox1.GotFocus += TextBoxGotFocus;
-            textBox1.LostFocus += TextBoxLostFocus;
-
-            label1.Click += (s, e) =>
+        public int Interval
+        {
+            get
             {
-                textBox1.Focus();
-                isFocus = true;
-            };
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            AlignUi();
-            Invalidate();
-        }
-
-        protected override void OnResize(EventArgs e)
-        {
-            base.OnResize(e);
-            AlignUi();
-            Invalidate();
-        }
-
-
-        private void DrawTextBoxUi(object sender, PaintEventArgs e)
-        {
-            Graphics g = e.Graphics;
-            g.SmoothingMode = SmoothingMode.AntiAlias;
-
-            Rectangle borderRect = new Rectangle(
-                ClientRectangle.X + 3,
-                ClientRectangle.Y + 2,
-                ClientRectangle.Width - 6,
-                ClientRectangle.Height - 4
-            );
-
-            using (Pen p = new Pen(_textBoxborderColor, 2))
+                return timer.Interval;
+            }
+            set
             {
-                GraphicsPath path = GetGraphicsPath(borderRect);
-
-                g.DrawPath(p, path);
-
-                if (label1.Location.Y <= 2)
-                {
-                    using (SolidBrush brush = new SolidBrush(BackColor))
-                    {
-                        Rectangle cutRect = new Rectangle(
-                            label1.Left - 4,
-                            0,
-                            label1.Width + 8,
-                            label1.Height
-                        );
-
-                        g.FillRectangle(brush, cutRect);
-                    }
-
-                    label1.BringToFront();
-                }
+                timer.Interval = value;
             }
         }
+        public Color TextBoxColor
+        {
+            get { return textBox1.BackColor; }
+            set
+            {
+                textBox1.BackColor = value;
+            }
+        }
+
+        public Color PlaceholderLabelAtTopColor
+        {
+            get
+            {
+                return placeholderLabelAtTopColor;
+            }
+            set
+            {
+                placeholderLabelAtTopColor = value;
+            }
+        }
+        public Color PlaceholderLabelAtCenterColor
+        {
+            get
+            {
+                return placeholderLabelAtCenterColor;
+
+            }
+            set
+            {
+                placeholderLabelAtCenterColor = value;
+                label1.ForeColor = value;
+                //textBox1.BackColor = value;
+                Invalidate();
+            }
+
+        }
+        public bool Multiline
+        {
+            get
+            {
+                return textBox1.Multiline;
+
+            }
+            set
+            {
+                textBox1.Multiline = value;
+                TextBoxUResize(this, EventArgs.Empty);
+            }
+        }
+        public DockStyle TextBoxDock
+        {
+            get
+            {
+                return textBox1.Dock;
+            }
+            set
+            {
+                textBox1.Dock = value;
+            }
+        }
+        public bool UseSystemPasswordChar
+        {
+            get
+            {
+                return textBox1.UseSystemPasswordChar;
+
+            }
+            set
+            {
+                textBox1.UseSystemPasswordChar = value;
+                if (value)
+                {
+                    textBox1.Multiline = false;
+                    textBox1.Dock = DockStyle.None;
+                    TextBoxUResize(this, EventArgs.Empty);
+                }
+                else
+                {
+                    textBox1.Multiline = true;
+                    textBox1.Dock = DockStyle.Fill;
+                }
+
+            }
+        }
+        public char PasswordChar
+        {
+            get
+            {
+                return textBox1.PasswordChar;
+            }
+            set
+            {
+                textBox1.PasswordChar = value;
+            }
+        }
+        public string TextBoxtext
+        {
+            get
+            {
+                return textBox1.Text;
+
+            }
+            set
+            {
+                textBox1.Text = value;
+
+            }
+        }
+        public string PlaceholderText
+        {
+            get
+            {
+                return label1.Text;
+            }
+            set
+            {
+
+                label1.Text = value;
+            }
+        }
+        public Color TextForeColor
+        {
+            get
+            {
+                return textBox1.ForeColor;
+            }
+            set
+            {
+
+                textBox1.ForeColor = value;
+            }
+
+        }
+
+
+
         private GraphicsPath GetGraphicsPath(Rectangle rect)
         {
 
             GraphicsPath path = new GraphicsPath();
-            int borderRadius = _curverRadius * 2;
             path.StartFigure();
             path.AddArc(rect.X, rect.Y, borderRadius, borderRadius, 180, 90);
-            path.AddArc(rect.Right - borderRadius, rect.Y, borderRadius, borderRadius, 270, 90);
-            path.AddArc(rect.Right - borderRadius, rect.Bottom - borderRadius, borderRadius, borderRadius, 0, 90);
-            path.AddArc(rect.X, rect.Bottom - borderRadius, borderRadius, borderRadius, 90, 90);
-            path.CloseFigure(); 
+            path.AddArc(rect.Width - borderRadius, rect.Y, borderRadius, borderRadius, 270, 90);
+            path.AddArc(rect.Width - borderRadius, rect.Height - borderRadius, borderRadius, borderRadius, 0, 90);
+            path.AddArc(rect.X, rect.Height - borderRadius, borderRadius, borderRadius, 90, 90);
+            path.CloseFigure();
             return path;
         }
-
-        private void AlignUi()
+        private void TextBoxUPaint(object sender, PaintEventArgs e)
         {
-            if (isFocus)
+            var g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
+            Color borderColor;
+            if (isCenterPlaceHolder)
+                borderColor = placeholderLabelAtCenterColor;
+            else
+                borderColor = placeholderLabelAtTopColor;
+
+            using (Pen pen = new Pen(borderColor, 2))
             {
-                label1.Location = new Point(10, 0);
-                label1.ForeColor = _titleColor;
-                label1.Font = _titleFont;
+                g.DrawPath(pen, GetGraphicsPath(new Rectangle(ClientRectangle.Location.X + 3, ClientRectangle.Location.Y + 2, ClientRectangle.Width - 6, ClientRectangle.Height - 4)));
+            }
+        }
+
+        private void Label1Click(object sender, EventArgs e)
+        {
+            if (isCenterPlaceHolder)
+            {
+                TextBoxUGotFocus(this, EventArgs.Empty);
+                textBox1.Focus();
+            }
+        }
+
+        private void TextBox1MouseEnter(object sender, EventArgs e)
+        {
+
+        }
+
+        private void PlaceholderMove(object sender, EventArgs e)
+        {
+            if (isCenterPlaceHolder == true && (label1.Location.X > 0 && label1.Location.Y > -3))
+            {
+                label1.Location = new Point(label1.Location.X - 2, label1.Location.Y - 2);
+            }
+            else if (isCenterPlaceHolder == false && (label1.Location.X < placeholderlocation.X && label1.Location.Y < placeholderlocation.Y))
+            {
+                label1.Location = new Point(label1.Location.X + 2, label1.Location.Y + 2);
             }
             else
             {
-                if (string.IsNullOrEmpty(textBox1.Text))
-                {
-                    label1.Location = new Point(
-                        (Width / 2) - (label1.Width / 2),
-                        (Height / 2) - (label1.Height / 2)
-                    );
-
-                    label1.ForeColor = _placeHolderColor;
-                    label1.Font = _placeHolderFont;
-                }
-                else
-                {
-                    label1.Location = new Point(10, 0);
-                    label1.ForeColor = _titleColor;
-                    label1.Font = _titleFont;
-                }
-            }
-        }
-
-        private void TextBoxGotFocus(object sender, EventArgs e)
-        {
-            isFocus = true;
-            timer.Start();
-        }
-
-        private void TextBoxLostFocus(object sender, EventArgs e)
-        {
-            isFocus = false;
-            timer.Start();
-        }
-
-        private void MovePlaceholder(object sender, EventArgs e)
-        {
-            lastPoint = label1.Location;
-
-            if (isFocus)
-            {
-                int newX = label1.Location.X;
-                int newY = label1.Location.Y;
-
-                if (newX > 10) newX -= 2;
-                if (newY > 0) newY -= 2;
-
-                if (newX < 10) newX = 10;
-                if (newY < 0) newY = 0;
-
-                label1.Location = new Point(newX, newY);
+                isCenterPlaceHolder = !isCenterPlaceHolder;
+                timer.Stop();
                 Invalidate();
+            }
+        }
 
-                if (newX == 10 && newY == 0)
-                {
-                    label1.ForeColor = _titleColor;
-                    label1.Font = _titleFont;
-                    timer.Stop();
-                }
+        private void TextBoxULostFocus(object sender, EventArgs e)
+        {
+            Point temp_Point = PointToClient(Cursor.Position);
+            //   if (2 > temp_Point.X || temp_Point.X >= Width-2|| 2 >temp_Point.Y || temp_Point.Y>= Height-2)
+            //  {
+            if (textBox1.Text == "" || textBox1.Text == null)
+            {
+                label1.ForeColor = placeholderLabelAtCenterColor;
+                label1.Font = placeholderTextCenterFont;
+                timer.Start();
+            }
+            //  }
+
+        }
+
+        private void TextBoxUGotFocus(object sender, EventArgs e)
+        {
+            if (isCenterPlaceHolder)
+            {
+                label1.ForeColor = placeholderLabelAtTopColor;
+                label1.Font = placeholderTextTopFont;
+                timer.Start();
+            }
+
+        }
+
+        private void TextBoxUResize(object sender, EventArgs e)
+        {
+            if (!textBox1.UseSystemPasswordChar)
+                Padding = new Padding(18, 20, Padding.Right, Padding.Bottom);
+            else
+                Padding = new Padding(18, 15, Padding.Right, Padding.Bottom);
+
+
+            textBox1.Width = Width - Padding.Left - Padding.Right;
+            textBox1.Location = new Point(Padding.Left, Height / 2 - (textBox1.Height / 2));
+            if (!textBox1.UseSystemPasswordChar)
+            {
+                placeholderlocation = new Point(textBox1.Location.X + (textBox1.Location.Y + (textBox1.Height / 2 - label1.Height / 2)), 1 + Height / 2 - label1.Height / 2);
             }
             else
             {
-                int expectedX = (Width / 2) - (label1.Width / 2);
-                int expectedY = (Height / 2) - (label1.Height / 2);
+                placeholderlocation = new Point(textBox1.Location.X + (textBox1.Location.Y + (textBox1.Height / 2 - label1.Height / 2)), 1 + Height / 2 - label1.Height / 2);
+            }
+            label1.Location = placeholderlocation;
+        }
 
-                if (string.IsNullOrEmpty(textBox1.Text))
-                {
-                    int newX = label1.Location.X;
-                    int newY = label1.Location.Y;
-
-                    if (newX < expectedX) newX += 2;
-                    if (newY < expectedY) newY += 2;
-
-                    if (newX > expectedX) newX = expectedX;
-                    if (newY > expectedY) newY = expectedY;
-
-                    label1.Location = new Point(newX, newY);
-                    Invalidate();
-
-
-                    if (newX == expectedX && newY == expectedY)
-                    {
-                        label1.ForeColor = _placeHolderColor;
-                        label1.Font = _placeHolderFont;
-                        timer.Stop();
-                    }
-                }
-                else
-                {
-                    label1.ForeColor = _titleColor;
-                    label1.Font = _titleFont;
-                    timer.Stop();
-                }
+        private void OnKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyData == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
             }
         }
     }

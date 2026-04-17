@@ -28,43 +28,33 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.customTextBox1 = new Admin.Component.CustomTextBox();
+            this.loginPage1 = new Admin.Pages.LoginPage();
             this.SuspendLayout();
             // 
-            // customTextBox1
+            // loginPage1
             // 
-            this.customTextBox1.BackColor = System.Drawing.Color.White;
-            this.customTextBox1.CurveRadius = 1;
-            this.customTextBox1.Location = new System.Drawing.Point(232, 103);
-            this.customTextBox1.Name = "customTextBox1";
-            this.customTextBox1.Padding = new System.Windows.Forms.Padding(16, 20, 16, 12);
-            this.customTextBox1.PlaceHolderColor = System.Drawing.Color.FromArgb(((int)(((byte)(148)))), ((int)(((byte)(163)))), ((int)(((byte)(184)))));
-            this.customTextBox1.PlaceHolderFont = new System.Drawing.Font("Segoe UI", 10F);
-            this.customTextBox1.Size = new System.Drawing.Size(283, 84);
-            this.customTextBox1.TabIndex = 0;
-            this.customTextBox1.TextBoxBackColor = System.Drawing.Color.White;
-            this.customTextBox1.TextBoxBorderColor = System.Drawing.Color.Black;
-            this.customTextBox1.TextBoxFont = new System.Drawing.Font("Segoe UI", 10.8F);
-            this.customTextBox1.TextBoxForeColor = System.Drawing.SystemColors.WindowText;
-            this.customTextBox1.TextBoxText = "";
-            this.customTextBox1.TitleColor = System.Drawing.Color.FromArgb(((int)(((byte)(37)))), ((int)(((byte)(99)))), ((int)(((byte)(235)))));
-            this.customTextBox1.TitleFont = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.loginPage1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.loginPage1.Location = new System.Drawing.Point(0, 0);
+            this.loginPage1.Name = "loginPage1";
+            this.loginPage1.Size = new System.Drawing.Size(800, 450);
+            this.loginPage1.TabIndex = 0;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.customTextBox1);
+            this.Controls.Add(this.loginPage1);
             this.Name = "Form1";
             this.Text = "Form1";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.ResumeLayout(false);
 
         }
 
         #endregion
 
-        private Component.CustomTextBox customTextBox1;
+        private Pages.LoginPage loginPage1;
     }
 }
 
