@@ -1,17 +1,14 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{655A21D7-1E89-4F5C-BEA4-02CCA84FFC18}</ProjectGuid>
     <OutputType>WinExe</OutputType>
-    <RootNamespace>Admin</RootNamespace>
-    <AssemblyName>Admin</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFramework>net9.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ImplicitUsings>disable</ImplicitUsings>
+    <Nullable>disable</Nullable>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
   </PropertyGroup>
+
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
@@ -112,10 +109,20 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\inventoryLogin.png" />
+    <ProjectReference Include="..\DataStrucutre\DataStrucutre.csproj" />
   </ItemGroup>
+
   <ItemGroup>
-    <None Include="Resources\inventoryLogo.png" />
+    <EmbeddedResource Remove="**\*.resx" />
+    <Compile Remove="Component\**\*.cs" />
+    <Compile Remove="Pages\LoginPage.cs" />
+    <Compile Remove="Pages\LoginPage.Designer.cs" />
+    <Compile Remove="Properties\Resources.Designer.cs" />
+    <Compile Remove="Properties\Settings.Designer.cs" />
+    <Compile Remove="ThemeManager\**\*.cs" />
+    <None Remove="Resources\*.png" />
+    <Content Include="Resources\*.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
