@@ -135,7 +135,6 @@ namespace Admin.Component
             }
         }
 
-
         private void MinimizeTimerTick(object sender, EventArgs e)
         {
             Form form = FindForm();
